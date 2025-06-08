@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.BuyOrderListDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.buy_order_id as buyOrderId
+        ,a.goods_id as goodsId
+        ,a.order_number as orderNumber
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.BuyOrderListView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,buyOrder.order_bianhao as orderBianhao
+        ,buyOrder.caozuo_name as caozuoName
+        ,buyOrder.caozuo_table as caozuoTable
+        ,buyOrder.huiyuan_id as huiyuanId
+        ,buyOrder.original_money as originalMoney
+        ,buyOrder.discount_money as discountMoney
+        ,buyOrder.insert_time as insertTime
+        ,goods.goods_name as goodsName
+        ,goods.goods_types as goodsTypes
+        ,goods.goods_number as goodsNumber
+        ,goods.goods_photo as goodsPhoto
+        ,goods.danwei as danwei
+        ,goods.danjia as danjia
+        ,goods.goods_content as goodsContent
+        ,goods.flag as flag
+
+        FROM buy_order_list  a
+        left JOIN buy_order buyOrder ON a.buy_order_id = buyOrder.order_bianhao
+        left JOIN goods goods ON a.goods_id = goods.id
+
+        <where>
+            <if test=" params.buyOrderId != '' and params.buyOrderId != null and params.buyOrderId != 'null' ">
+                and a.buy_order_id like CONCAT('%',#{params.buyOrderId},'%')
+            </if>
+            <if test="params.goodsId != null">
+                and a.goods_id = #{params.goodsId}
+            </if>
+            <if test="params.orderNumberStart != null">
+                <![CDATA[  and a.order_number >= #{params.orderNumberStart}   ]]>
+            </if>
+            <if test="params.orderNumberEnd != null">
+                <![CDATA[  and a.order_number <= #{params.orderNumberEnd}   ]]>
+            </if>
+
+            <if test=" params.orderBianhao != '' and params.orderBianhao != null and params.orderBianhao != 'null' ">
+                and buyOrder.order_bianhao like CONCAT('%',#{params.orderBianhao},'%')
+            </if>
+            <if test=" params.caozuoName != '' and params.caozuoName != null and params.caozuoName != 'null' ">
+                and buyOrder.caozuo_name like CONCAT('%',#{params.caozuoName},'%')
+            </if>
+            <if test=" params.caozuoTable != '' and params.caozuoTable != null and params.caozuoTable != 'null' ">
+                and buyOrder.caozuo_table like CONCAT('%',#{params.caozuoTable},'%')
+            </if>
+            <if test="params.huiyuanId != null">
+                and buyOrder.huiyuan_id = #{params.huiyuanId}
+            </if>
+            <if test="params.originalMoneyStart != null ">
+                <![CDATA[  and buyOrder.original_money >= #{params.originalMoneyStart}   ]]>
+            </if>
+            <if test="params.originalMoneyEnd != null ">
+                <![CDATA[  and buyOrder.original_money <= #{params.originalMoneyEnd}   ]]>
+            </if>
+            <if test="params.discountMoneyStart != null ">
+                <![CDATA[  and buyOrder.discount_money >= #{params.discountMoneyStart}   ]]>
+            </if>
+            <if test="params.discountMoneyEnd != null ">
+                <![CDATA[  and buyOrder.discount_money <= #{params.discountMoneyEnd}   ]]>
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(buyOrder.insert_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.insertTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(buyOrder.insert_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.insertTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+            <if test=" params.goodsName != '' and params.goodsName != null and params.goodsName != 'null' ">
+                and goods.goods_name like CONCAT('%',#{params.goodsName},'%')
+            </if>
+            <if test="params.goodsTypes != null">
+                and goods.goods_types = #{params.goodsTypes}
+            </if>
+
+            <if test="params.goodsNumberStart != null ">
+                <![CDATA[  and goods.goods_number >= #{params.goodsNumberStart}   ]]>
+            </if>
+            <if test="params.goodsNumberEnd != null ">
+                <![CDATA[  and goods.goods_number <= #{params.goodsNumberEnd}   ]]>
+            </if>
+            <if test=" params.danwei != '' and params.danwei != null and params.danwei != 'null' ">
+                and goods.danwei like CONCAT('%',#{params.danwei},'%')
+            </if>
+            <if test="params.danjiaStart != null ">
+                <![CDATA[  and goods.danjia >= #{params.danjiaStart}   ]]>
+            </if>
+            <if test="params.danjiaEnd != null ">
+                <![CDATA[  and goods.danjia <= #{params.danjiaEnd}   ]]>
+            </if>
+            <if test=" params.goodsContent != '' and params.goodsContent != null and params.goodsContent != 'null' ">
+                and goods.goods_content like CONCAT('%',#{params.goodsContent},'%')
+            </if>
+            <if test="params.flagStart != null ">
+                <![CDATA[  and goods.flag >= #{params.flagStart}   ]]>
+            </if>
+            <if test="params.flagEnd != null ">
+                <![CDATA[  and goods.flag <= #{params.flagEnd}   ]]>
+            </if>
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>
